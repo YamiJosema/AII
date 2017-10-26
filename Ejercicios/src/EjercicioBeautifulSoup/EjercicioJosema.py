@@ -55,9 +55,7 @@ def almacenar_productos():
             lastPage = int(paginas.get_text()[-1])
         current=1
         while current<=lastPage:
-#             almacenar_producto(lastPage,row[1], row[0]) #AQUIIIIIIIIIIII
             url = row[1]+u'?p='+str(current).decode('utf8')
-#             print data
             r=requests.get(url)
             data = r.text
             soup = BeautifulSoup(data, "lxml")
@@ -112,7 +110,7 @@ def mostar_categoria():
 def search(categoria, text):
     conn = sqlite3.connect('comida.db')
     cursor = conn.execute("SELECT * FROM PRODUCTOS WHERE CATEGORY LIKE '%"+categoria+"%'")
-#     text.delete('1.0', END)
+    text.delete(0, END)  #.curselection()
     i=1
     for row in cursor:
         text.insert(i,"Producto: "+row[1].strip()+"\n")
