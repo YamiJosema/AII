@@ -14,16 +14,20 @@ def listarCallBack(sql):
 
     lista = Toplevel()
     barra = Scrollbar(lista)
-    texto = Text(lista)
-
+    lista = Listbox(lista,width=150,height=40)
+    
+    i = 0
     #TODO este es el que tiene que cambiar:
     for row in cursor:
-        texto.insert(INSERT,row[0]+"\n")
-        texto.insert(INSERT,row[1]+"\n")    
-    
-    texto.pack(side = LEFT, fill = BOTH)
+        i+=1
+        if not row[4]=="0.0":
+            lista.insert(i,row[1]+"    "+row[3]+"OFERTA!!!  Antes: "+row[4])
+        else:
+            lista.insert(i,row[1]+"    "+row[3])
+        
+    lista.pack(side = LEFT, fill = BOTH)
     barra.pack(side = RIGHT, fill = Y)
-    barra.config( command = texto.yview )
+    barra.config( command = lista.yview )
     lista.mainloop()
     conn.close()
 
@@ -97,9 +101,10 @@ def almacenar_productos():
     conn.execute('''DROP TABLE IF EXISTS PRODUCTOS''')
     conn.execute('''CREATE TABLE PRODUCTOS
          (TITLE         TEXT    NOT NULL,
+         NAME            TEXT    NOT NULL,
          lINK           TEXT     NOT NULL,
          PRICE           TEXT    NOT NULL,
-         NEWPRICE        TEXT);''')
+         OLDPRICE        TEXT);''')
     cursor = conn.execute("SELECT * FROM CATEGORIAS")
     
     for row in cursor:
@@ -110,6 +115,7 @@ def almacenar_productos():
         productos = soup.find_all("div",{"class","prod_wrap"})
         for p in productos:
             link = p.find("div",{"class","prod_name"}).find("a")["href"]
+            name = p.find("div",{"class","prod_name"}).find("a").get_text()
             price = p.find("span",{"class","product_preu"})
             old_price = price.find("del")
             if old_price != None:
@@ -118,9 +124,9 @@ def almacenar_productos():
             else:
                 new_price=0.0
                 real_price=price.get_text()
-            conn.execute("INSERT INTO PRODUCTOS VALUES(?,?,?,?);",(row[0],link,real_price, new_price))
+            conn.execute("INSERT INTO PRODUCTOS VALUES(?,?,?,?,?);",(row[0],name,link,real_price, new_price))
     
-    tkMessageBox.showinfo( "Informacion", "Base de Datos creada correctamente")
+    tkMessageBox.showinfo("Informacion", "Base de Datos creada correctamente")
     conn.commit()
     conn.close()
 
