@@ -34,6 +34,9 @@ def almacenar_categoria():
     
     
     tuple(categorias)
+    muestra = Spinbox(top,values=categorias)
+    butt.pack(side=RIGHT)
+    muestra.pack(side = RIGHT)
     
     conn.commit()
     conn.close()
