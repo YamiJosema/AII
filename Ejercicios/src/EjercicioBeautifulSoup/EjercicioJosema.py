@@ -36,7 +36,7 @@ def almacenar_productos():
     conn = sqlite3.connect('comida.db')
     conn.execute('''DROP TABLE IF EXISTS PRODUCTOS''')
     conn.execute('''CREATE TABLE PRODUCTOS
-         (TITLE         TEXT    NOT NULL,
+         (CATEGORY         TEXT    NOT NULL,
          lINK           TEXT     NOT NULL,
          PRICE           TEXT    NOT NULL,
          NEWPRICE        TEXT);''')
@@ -61,11 +61,41 @@ def almacenar_productos():
             conn.execute("INSERT INTO PRODUCTOS VALUES(?,?,?,?);",(row[0],link,real_price, new_price))
     
     tkMessageBox.showinfo( "Informacion", "Base de Datos creada correctamente")
+
+    
+def mostar_categoria():
+    lc=[]
+    conn = sqlite3.connect('comida.db')
+    cursor = conn.execute("SELECT TITLE FROM CATEGORIAS")
+    for cc in cursor:
+        lc.append(cc[0])
+    
+    categorias = tuple(lc)
+    new = Tkinter.Toplevel()
+    
+    spin = Spinbox(new,values=categorias)
+    butt=Tkinter.Button(new, text="buscar", command= lambda: search(spin.get(), new))
+    butt.pack(side=RIGHT)
+    spin.pack(side = RIGHT)
+
+def search(categoria, level):
+    conn = sqlite3.connect('comida.db')
+#     cursor = conn.execute("SELECT * FROM PRODUCTOS WHERE CATEGORY LIKE '%"+categoria+"%'")
+#     cursor2 = conn.execute("SELECT TITLE FROM CATEGORIAS")
+    
+    cursor = conn.execute("SELECT * FROM PRODUCTOS")
+    for c in cursor:
+        print c[0],c[1]
         
+    text = Tkinter.Text(level)
+    
+    scrollbar = Tkinter.Scrollbar(text)
+    
+    
 top = Tkinter.Tk()
  
 AC = Tkinter.Button(top, text ="Almacenar Categorias", command=almacenar_productos)
-MC = Tkinter.Button(top, text ="Mostrar Categoria")
+MC = Tkinter.Button(top, text ="Mostrar Categoria", command=mostar_categoria)
  
 AC.pack( side = LEFT )
 MC.pack( side = LEFT )
