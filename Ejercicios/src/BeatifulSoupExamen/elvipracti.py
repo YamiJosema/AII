@@ -141,9 +141,50 @@ def tema():
     conn.close()
 
 
-def temasPopus():
-    print "heh"
 
+
+def temasPopus():
+    conn = sqlite3.connect('derecho.db')
+    cursor = conn.execute("SELECT * FROM TEMAS ORDER BY VIS DESC")
+    lista = Toplevel()
+    barra = Scrollbar(lista)
+    lista = Listbox(lista,width=150,height=40)
+    
+    i = 0
+    #TODO este es el que tiene que cambiar:
+    for row in cursor:         
+        i+=1
+        lista.insert(i,"Titulo: "+row[0]+"     Autor: "+row[2]+"      Fecha: "+row[3]+"    Visitas:"+row[5])
+        if i==5:
+            break
+        
+    lista.pack(side = LEFT, fill = BOTH)
+    barra.pack(side = RIGHT, fill = Y)
+    barra.config( command = lista.yview )
+    lista.mainloop()
+    conn.close()
+
+def temasActivo():
+    conn = sqlite3.connect('derecho.db')
+    cursor = conn.execute("SELECT * FROM TEMAS ORDER BY RES DESC")
+    lista = Toplevel()
+    barra = Scrollbar(lista)
+    lista = Listbox(lista,width=150,height=40)
+    
+    i = 0
+    #TODO este es el que tiene que cambiar:
+    for row in cursor:         
+        i+=1
+        lista.insert(i,"Titulo: "+row[0]+"     Autor: "+row[2]+"      Fecha: "+row[3]+"    Respuestas:"+row[4])
+        if i==5:
+            break
+        
+    lista.pack(side = LEFT, fill = BOTH)
+    barra.pack(side = RIGHT, fill = Y)
+    barra.config( command = lista.yview )
+    lista.mainloop()
+    conn.close()    
+    
 def principal():
     top = Tkinter.Tk()
      
@@ -163,16 +204,12 @@ def principal():
     menubar.add_cascade(label="Buscar", menu=bm)
     
     em = Menu(menubar, tearoff=0)
-    em.add_command(label="Temas más populares", command=donothing)
-    em.add_command(label="Temas más activos", command=donothing)
+    em.add_command(label="Temas más populares", command=temasPopus)
+    em.add_command(label="Temas más activos", command=temasActivo)
     menubar.add_cascade(label="Estadísticas", menu=em)
     
     
     top.config(menu=menubar)
-    
-    D = Tkinter.Button(top, text ="Datos")
-    B = Tkinter.Button(top, text ="Buscar")
-    E = Tkinter.Button(top, text ="Estadisticas") 
     
     top.mainloop()
     
