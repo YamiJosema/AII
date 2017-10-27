@@ -77,8 +77,7 @@ def lista(sql):
     #TODO este es el que tiene que cambiar:
     for row in cursor:
         i+=1
-        lista.insert(i,row[0]+"   Autores: "+row[2]+"  Fecha: "+row[3])
-        lista.insert(i,"HOLA!")
+        lista.insert(i,"Titulo: "+row[0]+"     Autor: "+row[2]+"      Fecha: "+row[3])
         
     lista.pack(side = LEFT, fill = BOTH)
     barra.pack(side = RIGHT, fill = Y)
@@ -109,6 +108,49 @@ def autor():
     busqueda.mainloop()
     conn.close()
 
+def fecha():
+    conn = sqlite3.connect('noticias.db')
+    busqueda = Toplevel()
+    label= Label(busqueda, text="Introduzca la fecha(dd/mm/yyyy):")
+    entrada=Entry(busqueda, bd=5)
+
+    def buttCallBack():
+        m=entrada.get()
+        sql="SELECT * from TEMAS WHERE DATE LIKE '%"+m+"%'"
+        lista(sql)
+    
+    butt=Tkinter.Button(busqueda, text="buscar", command = buttCallBack)
+    label.pack(side=LEFT)
+    entrada.pack(side=LEFT)
+    butt.pack(side=LEFT)
+    
+    
+    busqueda.mainloop()
+    conn.close()
+
+def tema():
+    conn = sqlite3.connect('noticias.db')
+    busqueda = Toplevel()
+    label= Label(busqueda, text="Introduzca palabra clave:")
+    entrada=Entry(busqueda, bd=5)
+
+    def buttCallBack():
+        m=entrada.get()
+        sql="SELECT * from TEMAS WHERE TITLE LIKE '%"+m+"%'"
+        lista(sql)
+    
+    butt=Tkinter.Button(busqueda, text="buscar", command = buttCallBack)
+    label.pack(side=LEFT)
+    entrada.pack(side=LEFT)
+    butt.pack(side=LEFT)
+    
+    
+    busqueda.mainloop()
+    conn.close()
+
+
+def temasPopus():
+    print "heh"
 
 def principal():
     top = Tkinter.Tk()
@@ -122,9 +164,9 @@ def principal():
     menubar.add_cascade(label="Datos", menu=dm)
     
     bm = Menu(menubar, tearoff=0)
-    bm.add_command(label="Tema", command=donothing)
+    bm.add_command(label="Tema", command=tema)
     bm.add_command(label="Autor", command=autor)
-    bm.add_command(label="Fecha", command=donothing)
+    bm.add_command(label="Fecha", command=fecha)
     
     menubar.add_cascade(label="Buscar", menu=bm)
     
