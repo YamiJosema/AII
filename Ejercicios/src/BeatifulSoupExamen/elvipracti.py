@@ -24,7 +24,7 @@ def cargar():
          VIS        TEXT    NOT NULL);''')
     
     for i in range(1,4,1):
-        url = "https://foros.derecho.com/foro/20-Derecho-Civil-General/page"+str(i)
+        url = "https://foros.derecho.com/foro/20-Derecho-Civil-General/page"+str(i) 
         r=requests.get(url)
         data = r.text
     
