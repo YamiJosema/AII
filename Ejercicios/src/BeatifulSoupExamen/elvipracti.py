@@ -12,9 +12,9 @@ def donothing():
     print "hola"
 
 
-def lista():
+def lista(sql):
     conn = sqlite3.connect('derecho.db')
-#    cursor = conn.execute("SELECT * from TEMAS")
+#    cursor = conn.execute(sql)
 
     lista = Toplevel()
     barra = Scrollbar(lista)
@@ -37,6 +37,26 @@ def lista():
 def mostrar():
     lista("SELECT * from TEMAS")
 
+def autor():
+    conn = sqlite3.connect('noticias.db')
+    busqueda = Toplevel()
+    label= Label(busqueda, text="Introduzca el autor:")
+    entrada=Entry(busqueda, bd=5)
+
+    def buttCallBack():
+        m=entrada.get()
+        sql="SELECT * from TEMAS WHERE AUTOR LIKE '%"+m+"%'"
+        lista(sql)
+    
+    butt=Tkinter.Button(busqueda, text="buscar", command = buttCallBack)
+    label.pack(side=LEFT)
+    entrada.pack(side=LEFT)
+    butt.pack(side=LEFT)
+    
+    
+    busqueda.mainloop()
+    conn.close()
+
 
 def principal():
     top = Tkinter.Tk()
@@ -51,7 +71,7 @@ def principal():
     
     bm = Menu(menubar, tearoff=0)
     bm.add_command(label="Tema", command=donothing)
-    bm.add_command(label="Autor", command=donothing)
+    bm.add_command(label="Autor", command=autor)
     bm.add_command(label="Fecha", command=donothing)
     
     menubar.add_cascade(label="Buscar", menu=bm)
