@@ -47,7 +47,7 @@ def mostrar_boton_buscar():
     tuple(categ)
     muestra = Spinbox(busqueda,values=categ)
 
-    def buttCallBack(): 
+    def buttCallBack():
         m=muestra.get()
         sql="SELECT * from PRODUCTOS WHERE TITLE LIKE '%"+m+"%'"
         listarCallBack(sql)
@@ -70,7 +70,7 @@ def almacenar_categoria():
     conn.execute('''CREATE TABLE CATEGORIAS
          (TITLE         TEXT    NOT NULL,
          lINK           TEXT     NOT NULL);''')
-    
+
     url = "http://www.delicatessin.com/es/Delicatessin"
     r=requests.get(url)
     data = r.text
@@ -88,7 +88,7 @@ def almacenar_categoria():
         
         conn.execute("INSERT INTO CATEGORIAS VALUES(?,?);",(title,link))
     
-    
+
     categorias = tuple(categorias)    
     conn.commit()
     conn.close()
@@ -96,7 +96,7 @@ def almacenar_categoria():
 
 def almacenar_productos():
     almacenar_categoria()
-    
+
     conn = sqlite3.connect('comida.db')
     conn.execute('''DROP TABLE IF EXISTS PRODUCTOS''')
     conn.execute('''CREATE TABLE PRODUCTOS
@@ -108,32 +108,47 @@ def almacenar_productos():
     cursor = conn.execute("SELECT * FROM CATEGORIAS")
     
     for row in cursor:
-        r=requests.get(row[1])
-        data = r.text
+        num = 0
+        first=requests.get(row[1])
+        data = first.text
         soup = BeautifulSoup(data, "lxml")
-        
-        productos = soup.find_all("div",{"class","prod_wrap"})
-        for p in productos:
-            link = p.find("div",{"class","prod_name"}).find("a")["href"]
-            name = p.find("div",{"class","prod_name"}).find("a").get_text()
-            price = p.find("span",{"class","product_preu"})
-            old_price = price.find("del")
-            if old_price != None:
-                new_price=old_price.get_text()
-                real_price=price.get_text().replace(new_price,"")
-            else:
-                new_price=0.0
-                real_price=price.get_text()
-            conn.execute("INSERT INTO PRODUCTOS VALUES(?,?,?,?,?);",(row[0],name,link,real_price, new_price))
-    
-    tkMessageBox.showinfo("Informacion", "Base de Datos creada correctamente")
+           
+        haches = soup.find_all("h1")
+        for h in haches:
+            h = re.findall(r'\d+', str(h.find("span")))
+            if h:
+                a = int(h[0])
+                num+= (a/50)+1
+                print num
+            
+        while num > 0:
+            r=requests.get(row[1]+"#/page-"+str(num))
+            print row[1]+"#/page-"+str(num)
+            data = r.text
+            soup = BeautifulSoup(data, "lxml")
+     
+            productos = soup.find_all("div",{"class","prod_wrap"})
+            for p in productos:
+                link = p.find("div",{"class","prod_name"}).find("a")["href"]
+                name = p.find("div",{"class","prod_name"}).find("a").get_text()
+                price = p.find("span",{"class","product_preu"})
+                old_price = price.find("del")
+                if old_price != None:
+                    new_price=old_price.get_text()
+                    real_price=price.get_text().replace(new_price,"")
+                else:
+                    new_price=0.0
+                    real_price=price.get_text()
+                conn.execute("INSERT INTO PRODUCTOS VALUES(?,?,?,?,?);",(row[0],name,link,real_price, new_price))
+                
+            num-=1
     conn.commit()
     conn.close()
+    tkMessageBox.showinfo( "Informacion", "Base de Datos creada correctamente")
+
 
 top = Tkinter.Tk()
-        
 
-butt=Tkinter.Button(top, text="buscar")
 
 AC = Tkinter.Button(top, text ="Almacenar Categorias", command=almacenar_productos)
 MC = Tkinter.Button(top, text ="Mostrar Categoria", command= mostrar_boton_buscar)
