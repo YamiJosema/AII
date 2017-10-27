@@ -20,8 +20,8 @@ def cargar():
          lINK           TEXT     NOT NULL,
          AUTOR        TEXT    NOT NULL,
          DATE        TEXT    NOT NULL,
-         RES        TEXT    NOT NULL,
-         VIS        TEXT    NOT NULL);''')
+         RES        INTEGER    NOT NULL,
+         VIS        INTEGER    NOT NULL);''')
     
     for i in range(1,4,1):
         url = "https://foros.derecho.com/foro/20-Derecho-Civil-General/page"+str(i) 
@@ -37,7 +37,7 @@ def cargar():
             link = first.find("a")["href"]
         
             second = t.find("ul",{"class":"threadstats"})
-            res=second.find("a").get_text()
+            res=second.find("a").get_text().strip()
             vis=second.get_text().split("\n")[2].replace("Visitas: ", "")
         
             third=t.find("span",{"class":"time"}).parent
@@ -154,7 +154,7 @@ def temasPopus():
     #TODO este es el que tiene que cambiar:
     for row in cursor:         
         i+=1
-        lista.insert(i,"Titulo: "+row[0]+"     Autor: "+row[2]+"      Fecha: "+row[3]+"    Visitas:"+row[5])
+        lista.insert(i,"Titulo: "+row[0]+"     Autor: "+row[2]+"      Fecha: "+row[3]+"    Visitas:"+str(row[5]))
         if i==5:
             break
         
@@ -175,7 +175,7 @@ def temasActivo():
     #TODO este es el que tiene que cambiar:
     for row in cursor:         
         i+=1
-        lista.insert(i,"Titulo: "+row[0]+"     Autor: "+row[2]+"      Fecha: "+row[3]+"    Respuestas:"+row[4])
+        lista.insert(i,"Titulo: "+row[0]+"     Autor: "+row[2]+"      Fecha: "+row[3]+"    Respuestas:"+str(row[4]))
         if i==5:
             break
         
