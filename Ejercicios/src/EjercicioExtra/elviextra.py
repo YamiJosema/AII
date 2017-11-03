@@ -1,8 +1,5 @@
-'''
-Created on 3 nov. 2017
+#encoding: utf-8
 
-@author: elvir
-'''
 import Tkinter
 import sqlite3
 import tkMessageBox
@@ -16,7 +13,7 @@ def donothing():
     print "a"
 
 def cargar():
-    conn = sqlite3.connect('derecho.db')
+    conn = sqlite3.connect('marca.db')
     conn.execute('''DROP TABLE IF EXISTS CRONICAS''')
     conn.execute('''CREATE TABLE CRONICAS
          (PARTIDO         TEXT    NOT NULL,
@@ -33,23 +30,27 @@ def cargar():
 
     jornadas = contenedor.findAll("li",{"class":"contenedorCalendarioInt"})
     for j in jornadas:
-        i = j.find("h2")
-        partidos = contenedor.findAll("a",{"class":"final"})
-        print i
+        i = j.find("h2").get_text().replace('Jornada ', '')
+        partidos = j.findAll("a",{"class":"final"})
         for p in partidos:
 #            print p
-            partido = donothing()
-            resultado = donothing()
+            partido = p.get("title")
+            print partido
+            jornada = i
+            print jornada
+            resultado = p.find("span",{"class":"resultado"}).get_text()
+            print resultado
             cronica = p.get("href")
-#            conn.execute("INSERT INTO CRONICAS VALUES(?,?,?,?);",(partido,i,resultado,cronica))
+            print cronica
+            conn.execute("INSERT INTO CRONICAS VALUES(?,?,?,?);",(partido,i,resultado,cronica))
      
-#    cursor = conn.execute("SELECT COUNT(*) FROM CRONICAS")
-#    number=0
-#    for c in cursor:
-#        number=c[0]
+    cursor = conn.execute("SELECT COUNT(*) FROM CRONICAS")
+    number=0
+    for c in cursor:
+        number=c[0]
      
     conn.commit()
-#    tkMessageBox.showinfo( "Informacion", "Numero de elementos: "+str(len(partidos))+"\n En la BD: "+str(number))
+    tkMessageBox.showinfo( "Informacion", "Numero de elementos en la BD: "+str(number))
     
     conn.close()
 
