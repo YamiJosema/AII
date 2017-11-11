@@ -8,8 +8,8 @@ from whoosh.index import *
 from whoosh.fields import *
 from whoosh.qparser import QueryParser
 
-dirindexT="Themes"
-dirindexR="Answers"
+dirindexT="Index/Themes"
+dirindexR="Index/Answers"
 
 def cargar():
     if not os.path.exists(dirindexT):
