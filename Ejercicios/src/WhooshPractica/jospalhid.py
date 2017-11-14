@@ -19,7 +19,7 @@ def cargar():
     
     if not os.path.exists(dirindexR):
         os.mkdir(dirindexR)
-    schema = Schema(title=TEXT(stored=True),date=TEXT(stored=True),textarea=TEXT(stored=True),author=TEXT(stored=True),link=TEXT) #importante poner stored si vas a listar
+    schema = Schema(title=TEXT(stored=True),date=TEXT(stored=True),textarea=TEXT(phrase=True),author=TEXT(stored=True),link=TEXT) #importante poner stored si vas a listar. pharase si quieres buscar por frases
     ixa = create_in(dirindexR,schema)
     
     count = 0
