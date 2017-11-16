@@ -96,8 +96,8 @@ def buscar_fecha():
             fecha = datetime.strptime(en.get(), '%Y%m%d').date()
             ixc=open_dir(dirindexC)      
             with ixc.searcher() as searcher:
-                query = QueryParser("fecha", ixc.schema).parse(unicode(fecha)) #posteriores a una fecha dada fechaCorreo>fechaDada
-                print query
+                # {*fecha* to] <-- indica conjunto abierto hasta el final
+                query = QueryParser("fecha",ixc.schema).parse(unicode("{"+str(fecha)+" to]"))
                 results = searcher.search(query)
                 for r in results:
                     lb.insert(END,r['remitente'])
