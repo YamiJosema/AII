@@ -7,6 +7,7 @@ import os
 from whoosh.index import *
 from whoosh.fields import *
 from whoosh.qparser import QueryParser
+from datetime import datetime, timedelta
 
 dirindexT="Index/Themes"
 dirindexR="Index/Answers"
@@ -14,12 +15,12 @@ dirindexR="Index/Answers"
 def cargar():
     if not os.path.exists(dirindexT):
         os.mkdir(dirindexT)
-    schema = Schema(title=TEXT(stored=True),link=TEXT,respuestas=TEXT,visitas=TEXT,author=TEXT(stored=True),link2=TEXT,date=TEXT(stored=True)) #importante poner stored si vas a listar
+    schema = Schema(title=TEXT(stored=True),link=TEXT,respuestas=TEXT,visitas=TEXT,author=TEXT(stored=True),link2=TEXT,date=DATETIME(stored=True)) #importante poner stored si vas a listar
     ixt = create_in(dirindexT,schema)
     
     if not os.path.exists(dirindexR):
         os.mkdir(dirindexR)
-    schema = Schema(title=TEXT(stored=True),date=TEXT(stored=True),textarea=TEXT(phrase=True),author=TEXT(stored=True),link=TEXT) #importante poner stored si vas a listar. pharase si quieres buscar por frases
+    schema = Schema(title=TEXT(stored=True),date=DATETIME(stored=True),textarea=TEXT(phrase=True),author=TEXT(stored=True),link=TEXT) #importante poner stored si vas a listar. pharase si quieres buscar por frases
     ixa = create_in(dirindexR,schema)
     
     count = 0
@@ -46,13 +47,25 @@ def cargar():
         
         third=t.find("span",{"class":"time"}).parent
         date = third.get_text().strip()
+        
+        timestamp=date.split(",")
+        localdate = timestamp[0].strip()
+        if "Hoy"==localdate:
+            ddate = datetime.utcnow()
+        else:
+            if "Ayer"==localdate:
+                ddate = datetime.utcnow() + timedelta(days=1)
+            else:
+                ddate = datetime.strptime(date, '%d/%m/%Y, %H:%M')
+                
         au = t.find("a",{"class":"username"})
         linkAutor = au['href']
         autor=au.get_text()
             
-        writer.add_document(title=unicode(title),link=unicode(link),respuestas=unicode(res),visitas=unicode(vis),author=unicode(autor),link2=unicode(linkAutor),date=unicode(date))
+        writer.add_document(title=unicode(title),link=unicode(link),respuestas=unicode(res),visitas=unicode(vis),author=unicode(autor),link2=unicode(linkAutor),date=ddate)
             
         count+=1
+        
     writer.commit() 
     tkMessageBox.showinfo( "Informacion", "Numero de temas: "+str(count)+ "\nNumero de respuestas: "+str(answ))
 
@@ -68,8 +81,19 @@ def cargarR(url, titleT, ix):
     writer=ix.writer()
     for t in temas:
         first=t.find("div",{"class":"posthead"})
-        date = first.find("span",{"class":"date"}).get_text()
+        date = first.find("span",{"class":"date"}).get_text().strip()
         
+        timestamp=unicode(date).split(",")
+        localdate = timestamp[0].strip()
+        localtime = timestamp[1].strip()
+        if "Hoy"==localdate:
+            ddate = datetime.utcnow()
+        else:
+            if "Ayer"==localdate:
+                ddate = datetime.utcnow() + timedelta(days=1)
+            else:
+                ddate = datetime.strptime(localdate+localtime, '%d/%m/%Y%H:%M')
+                
         core = t.find("div",{"class":"postdetails"})
         
         second = core.find("div",{"class":"userinfo"})
@@ -80,7 +104,7 @@ def cargarR(url, titleT, ix):
         third = core.find("div",{"class":"postbody"})
         text = third.find("div",{"class":"content"}).get_text().strip()
         
-        writer.add_document(title=unicode(titleT),date=unicode(date),textarea=unicode(text),author=unicode(author),link=unicode(link))
+        writer.add_document(title=unicode(titleT),date=ddate,textarea=unicode(text),author=unicode(author),link=unicode(link))
                     
         count+=1
     writer.commit() 
