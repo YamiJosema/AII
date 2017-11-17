@@ -58,8 +58,8 @@ def index():
             datac = rcronica.text
             soup = BeautifulSoup(datac, "lxml")
             titulares=soup.find("section",{"class":"columnaTitular"})
-            titular = titulares.h3
-            titulo =  titulares.h4
+            titular = titulares.h3.get_text()
+            titulo =  titulares.h4.get_text()
             nombre = titulares.find("span",{"class","nombre"}).get_text()
             autores.append(unicode(nombre))
             
@@ -174,14 +174,14 @@ def buscar_autor():
     f.pack(side=TOP)
     l = Label(f, text="Seleccione Autor")
     l.pack(side=LEFT)
-    spin = Spinbox(v,values=autores)
-    spin.pack(side = RIGHT)
+    spin = Spinbox(f,values=autores)
+    spin.pack(side = LEFT)
     sc = Scrollbar(v)
     sc.pack(side=RIGHT, fill=Y)
     lb = Listbox(v, yscrollcommand=sc.set, width=80, height=40)
     lb.pack(side=BOTTOM, fill = BOTH)
     sc.config(command = lb.yview)
-    butt=Button(v, text="buscar", command= mostrar_lista)
+    butt=Button(f, text="buscar", command= mostrar_lista)
     butt.pack(side=RIGHT) 
     
 def buscar(pattern):
