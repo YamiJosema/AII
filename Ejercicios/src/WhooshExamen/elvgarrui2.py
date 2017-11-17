@@ -1,7 +1,7 @@
 from Tkinter import *
 import Tkinter
 import tkMessageBox
-from datetime import datetime
+import datetime
 
 import os
 
@@ -42,10 +42,12 @@ def index():
     for j in jornadas:
         #i = No. DE JORNADA
         i = j.find("h2").get_text().replace('Jornada ', '')
-        
-        partidos = j.findAll("a",{"class":"final"})
+        partidos = j.findAll("li")
         for p in partidos:
-            partido = p.get("title")
+            fechas = j.find("article").find("time")['content'].split("T")
+            fecha=datetime.datetime.strptime(unicode(fechas[0]),"%Y-%m-%d")
+            p=p.find("a",{"class":"final"})
+            partido = p.get("title").strip()
             nombres= partido.split(" vs ")
             local=nombres[0].strip()
             visitante=nombres[1].strip()
@@ -59,7 +61,6 @@ def index():
             titular = titulares.h3
             titulo =  titulares.h4
             nombre = titulares.find("span",{"class","nombre"}).get_text()
-            fecha = titulares.find("span",{"class","fecha"}).get_text()
             textos = soup.find("div",{"class":"cuerpo_articulo"}).find_all("p")
             texto=""
             for p in textos:
@@ -67,7 +68,7 @@ def index():
             
 #             fch = datetime.strptime(unicode(fecha), '%Y%m%d')
             
-            writer.add_document(jornada=unicode(i), local=unicode(local), visitante=unicode(visitante), resultado=unicode(resultado), fecha=datetime.utcnow(), autor=unicode(nombre), titular=unicode(titular), titulo=unicode(titulo), texto=unicode(texto))
+            writer.add_document(jornada=unicode(i), local=unicode(local), visitante=unicode(visitante), resultado=unicode(resultado), fecha=fecha, autor=unicode(nombre), titular=unicode(titular), titulo=unicode(titulo), texto=unicode(texto))
             count+=1
         if int(i)==4:
             break
