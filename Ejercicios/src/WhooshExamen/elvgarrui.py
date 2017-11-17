@@ -39,7 +39,7 @@ def index():
             textos = soup.find("div",{"class":"cuerpo_articulo"}).find_all("p")
             texto=""
             for p in textos:
-                texto+=p.get_text()+" "
+                texto+=p.get_text()+"  "
             
                 
         if int(i)==4:
