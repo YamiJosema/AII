@@ -1,8 +1,59 @@
 from Tkinter import Menu
 import Tkinter
+import tkMessageBox
+
+from bs4 import BeautifulSoup
+import requests
+
 
 def index():
-    print "nada"
+    url = "http://www.marca.com/futbol/primera-division/calendario.html"
+    r=requests.get(url)
+    data = r.text
+    soup = BeautifulSoup(data, "lxml")
+    soup.get("section")
+    contenedor = soup.find("ul",{"class":"contenedor-calendario"})
+
+    jornadas = contenedor.findAll("li",{"class":"contenedorCalendarioInt"})
+    for j in jornadas:
+        #i = No. DE JORNADA
+        i = j.find("h2").get_text().replace('Jornada ', '')
+        
+        partidos = j.findAll("a",{"class":"final"})
+        for p in partidos:
+            partido = p.get("title")
+            nombres= partido.split(" vs ")
+            local=nombres[0].strip()
+            visitante=nombres[1].strip()
+            resultado = p.find("span",{"class":"resultado"}).get_text().strip()
+            #print resultado
+            cronica = p.get("href").strip()
+            rcronica=requests.get(cronica)
+            datac = rcronica.text
+            soup = BeautifulSoup(datac, "lxml")
+            titulares=soup.find("section",{"class":"columnaTitular"})
+            titular = titulares.h3
+            titulo =  titulares.h4
+            nombre = titulares.find("span",{"class","nombre"}).get_text()
+            fecha = titulares.find("span",{"class","fecha"}).get_text()
+            textos = soup.find("div",{"class":"cuerpo_articulo"}).find_all("p")
+            texto=""
+            for p in textos:
+                texto+=p.get_text()+" "
+            
+                
+        if int(i)==4:
+            break
+    
+#insert     
+#    cursor = conn.execute("SELECT COUNT(*) FROM CRONICAS")
+
+     
+
+    tkMessageBox.showinfo( "Informacion"+ " cronicas y " +" goles.")
+ 
+    
+    
 def buscar(pattern):
     print "nada"
 
